@@ -24,10 +24,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/30 0030日下午 20:38
- */
 @Service
 public class PictureInfoServiceImpl  implements PictureInfoService {
     @Autowired
@@ -53,6 +49,7 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
         //获取原始文件名称(包含格式)
         String originalFileName = pictureFile.getOriginalFilename();
         //获取文件类型，以最后一个`.`为标识
+        assert originalFileName != null;
         String type = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
         //重新命名图片，避免重复
         String fileName = UUID.randomUUID().toString().replace("-", "") + "." + type;
@@ -79,19 +76,15 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
             pictureInfo.setPicName(fileName);//文件名
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
             Metadata metadata = ImageMetadataReader.readMetadata(targetFile);//读取图片元信息，以提取拍摄时间、拍照时的经纬度
-            Iterator<Directory> it = metadata.getDirectories().iterator();
-            while (it.hasNext()) {
-                Directory exif = it.next();
-                Iterator<Tag> tags = exif.getTags().iterator();
-                while (tags.hasNext()) {
-                    Tag tag = (Tag) tags.next();
-                    switch (tag.getTagName()){
+            for (Directory exif : metadata.getDirectories()) {
+                for (Tag tag : exif.getTags()) {
+                    switch (tag.getTagName()) {
                         case "Date/Time":
                             Date date = simpleDateFormat.parse(tag.getDescription());
                             pictureInfo.setShootTime(date);
                             break;
                         case "Date/Time Original":
-                            if (pictureInfo.getShootTime() == null){
+                            if (pictureInfo.getShootTime() == null) {
                                 pictureInfo.setShootTime(simpleDateFormat.parse(tag.getDescription()));
                             }
                             break;
@@ -135,26 +128,23 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
 
     @Override
     public List<BoxAreaInfo> selectBoxAreaPictureInfoByView(String boxArea) {
-        //-----------编码练习部分·开始---------------
         String[] boxAreaLoc = boxArea.split(",");
         double rightUpLongitude = Double.parseDouble(boxAreaLoc[0]);//右上角经度
         double rightUpLatitude = Double.parseDouble(boxAreaLoc[1]);//右上角纬度
         double leftDownLongitude = Double.parseDouble(boxAreaLoc[2]);//左下角经度
         double leftDownLatitude = Double.parseDouble(boxAreaLoc[3]);//左下角纬度
-        double leftUpLatitude = rightUpLatitude;
-        double rightDownLongitude = rightUpLongitude;
         //查询要求是四个角的坐标都要有，默认纵轴分4个，横轴分3个，即将手机屏幕分割为12个小区域逐一查询
         int rowCount = 4;
         int columnCount = 3;
-        double intervalLongitude = (rightDownLongitude - leftDownLongitude) / columnCount;//每格的经度间隔
-        double intervalLatitude = (leftUpLatitude - leftDownLatitude) / rowCount;//每格的纬度间隔
+        double intervalLongitude = (rightUpLongitude - leftDownLongitude) / columnCount;//每格的经度间隔
+        double intervalLatitude = (rightUpLatitude - leftDownLatitude) / rowCount;//每格的纬度间隔
         List<BoxAreaInfo> boxAreaInfoList = new ArrayList<>();
         for (int row = 0; row < rowCount; row++){
             for (int column = 0; column < columnCount; column++){
-                String leftDown = String.valueOf(leftDownLongitude + column * intervalLongitude) + " " + String.valueOf(leftDownLatitude + row * intervalLatitude);
-                String leftUp = String.valueOf(leftDownLongitude + column * intervalLongitude) + " " + String.valueOf(leftDownLatitude + (row+1) * intervalLatitude);
-                String rightUp = String.valueOf(leftDownLongitude + (column+1) * intervalLongitude) + " " + String.valueOf(leftDownLatitude + (row+1) * intervalLatitude);
-                String rightDown = String.valueOf(leftDownLongitude + (column+1) * intervalLongitude) + " " + String.valueOf(leftDownLatitude + row * intervalLatitude);
+                String leftDown = (leftDownLongitude + column * intervalLongitude) + " " + (leftDownLatitude + row * intervalLatitude);
+                String leftUp = (leftDownLongitude + column * intervalLongitude )+ " " + (leftDownLatitude + (row + 1) * intervalLatitude);
+                String rightUp = (leftDownLongitude + (column + 1) * intervalLongitude) + " " + (leftDownLatitude + (row + 1) * intervalLatitude);
+                String rightDown = (leftDownLongitude + (column + 1) * intervalLongitude) + " " + (leftDownLatitude + row * intervalLatitude);
                 String geometryBox = "(" + String.join(",", leftDown, leftUp, rightUp, rightDown, leftDown) + ")";//拼接形式符合PostGIS表达的空间区域
                 List<PictureInfo> pictureInfoList = pictureInfoMapper.findPictureListByBox(geometryBox);
                 if (pictureInfoList != null && pictureInfoList.size() > 0){
@@ -170,7 +160,6 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
             }
         }
         return boxAreaInfoList;
-        //-----------编码练习部分·结束---------------
     }
 
     @Override
@@ -195,8 +184,8 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
         List<PictureInfo> pictureInfoList = pictureInfoMapper.findPictureListByBox(boxArea);
         List<String> pictureUrlList = new ArrayList<>();
         if (pictureInfoList != null){
-            for (int i = 0; i < pictureInfoList.size(); i++){
-                String pictureUrl = pictureInfoList.get(i).getPicName();//仅返回缩略图名字
+            for (PictureInfo pictureInfo : pictureInfoList) {
+                String pictureUrl = pictureInfo.getPicName();//仅返回缩略图名字
                 pictureUrlList.add(pictureUrl);
             }
         }
@@ -212,7 +201,6 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
             File compressFile = new File(deleteCompressPath);//删除压缩图
             if (compressFile.exists())//图片是否存在
                 compressFile.delete();
-
             File originFile = new File(deleteOriginPath);//删除原图
             if (originFile.exists())
                 originFile.delete();
@@ -250,9 +238,6 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
 
     /**
      * 返回查看图片的URL
-     * @param pictureInfo
-     * @param needCompress
-     * @return
      */
     public String getPictureInfoURL(PictureInfo pictureInfo, boolean needCompress){
         if (pictureInfo != null){

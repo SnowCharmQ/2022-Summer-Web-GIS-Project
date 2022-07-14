@@ -7,10 +7,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/29 0029日下午 22:33
- */
 @Data
 public class PictureInfo  implements Serializable {
     private Integer id;

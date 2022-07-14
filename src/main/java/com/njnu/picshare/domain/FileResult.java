@@ -4,10 +4,6 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/29 0029日下午 22:45
- */
 @Data
 public class FileResult implements Serializable {
     //判断结果

@@ -6,10 +6,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/29 0029日下午 22:17
- */
 public abstract class BaseController {
     protected String msg;
     protected HttpServletRequest request;

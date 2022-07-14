@@ -17,10 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/29 0029日下午 22:18
- */
 @Slf4j
 @RestController
 @CrossOrigin
@@ -32,7 +28,6 @@ public class PictureInfoController extends BaseController {
 
     /**
      * 接口测试
-     * @return
      */
     @GetMapping("/serviceTest")
     public JsonResult serviceTest(){
@@ -47,7 +42,6 @@ public class PictureInfoController extends BaseController {
      * @param file 用户上传的照片
      * @param location 用户当前所处的位置
      * @param attachment 照片的附言
-     * @return
      */
     @PostMapping("/uploadPicture")
     public JsonResult uploadPictureFile(@RequestParam("file") MultipartFile file, @RequestParam("location") String location, @RequestParam(value = "attachment",defaultValue="") String attachment){
@@ -70,7 +64,6 @@ public class PictureInfoController extends BaseController {
     /**
      * 通过边界经纬度查询该区域的所有照片，返回相关照片的URL
      * [照片1url，照片2url...]
-     * @return
      */
     @GetMapping("/picturesByBox")
     public JsonResult getPictureListByBox(@RequestParam("boxExtent")String boxExtent){
@@ -81,14 +74,9 @@ public class PictureInfoController extends BaseController {
 
     /**
      * 查看照片
-     * @param pictureName
-     * @param needCompress
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     @GetMapping("/viewPicture")
     public void viewPictureFile(@RequestParam("pictureName") String pictureName, @RequestParam("needCompress") Integer needCompress) throws FileNotFoundException, IOException{
-        //-----------编码练习部分·开始---------------
         //1、根据照片名称找到文件路径；
         String realPath = "";
         if (needCompress == 1){
@@ -112,16 +100,13 @@ public class PictureInfoController extends BaseController {
         out.write(buff);
         //关闭响应输出流
         out.close();
-        //-----------编码练习部分·结束---------------
     }
 
     /**
      * 查看缩略图
-     * @return
      */
     @GetMapping("/viewThumbnailPicture")
     public void viewThumbnailPicture(@RequestParam("pictureName") String pictureName) throws IOException{
-        //-----------编码练习部分·开始---------------
         String fileType = pictureName.substring(pictureName.lastIndexOf(".") + 1);
         FileInputStream inputStream = pictureInfoService.getThumbnailPicture(pictureName);
         int i = inputStream.available();
@@ -136,21 +121,17 @@ public class PictureInfoController extends BaseController {
         out.write(buff);
         //关闭响应输出流
         out.close();
-        //-----------编码练习部分·结束---------------
     }
 
     /**
      * 查看照片附言
-     * @return
      */
     @GetMapping("/viewAttachment")
     public JsonResult viewPictureAttachment(@RequestParam("pictureName") String pictureName){
-        //-----------编码练习部分·开始---------------
         String attachment = pictureInfoService.selectPictureAttachmentByName(pictureName);
         if (attachment == null) attachment = "";
         json.setData(attachment);
         return json;
-        //-----------编码练习部分·结束---------------
     }
 
     @PostMapping("/deletePicture")
