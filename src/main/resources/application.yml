@@ -1,0 +1,3 @@
+logging:
+  level:
+    com.njnu.picshare.mapper: debug
