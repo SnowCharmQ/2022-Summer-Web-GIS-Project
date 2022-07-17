@@ -1,3 +1,3 @@
 export default {
-  navigationBarTitleText: 'WebGIS案例'
+  navigationBarTitleText: 'WebGIS Project'
 }

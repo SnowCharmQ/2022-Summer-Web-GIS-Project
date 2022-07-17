@@ -1,6 +1,6 @@
 {
   "miniprogramRoot": "./",
-  "projectname": "shaer-album",
+  "projectname": "Web-GIS",
   "appid": "touristappid",
   "setting": {
     "es6": false,

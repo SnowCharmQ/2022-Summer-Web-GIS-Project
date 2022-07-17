@@ -1,6 +1,6 @@
-import React, {memo, useState} from 'react'
+import React, { memo, useState } from 'react'
 import Taro from '@tarojs/taro'
-import {View, Text} from '@tarojs/components'
+import { View, Text } from '@tarojs/components'
 import './index.css'
 
 
@@ -18,7 +18,7 @@ const Navigation = memo(props => {
   return (
     <View style={`height:${systemInfo.navBarHeight}px;`} className='navBar'>
       <View className='navBarContent'
-            style={`height:${systemInfo.menuHeight}px; min-height:${systemInfo.menuHeight}px; line-height:${systemInfo.menuHeight}px; left:${systemInfo.menuRight + 10}px; bottom:${systemInfo.menuTop}px`}
+        style={`height:${systemInfo.menuHeight}px; min-height:${systemInfo.menuHeight}px; line-height:${systemInfo.menuHeight}px; left:${systemInfo.menuRight + 10}px; bottom:${systemInfo.menuTop}px`}
       >
         <View className='return' onClick={e => returnPreviousPage()}></View>
         <Text className='title'>{`${props.area ? props.area.pictureCount : '--'}张照片`}</Text>

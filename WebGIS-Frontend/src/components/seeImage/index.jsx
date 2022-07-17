@@ -1,6 +1,6 @@
-import React, {memo, useEffect, useState} from 'react'
-import Taro, {downloadFile} from '@tarojs/taro'
-import {View, Image, Icon, Text, Textarea} from '@tarojs/components'
+import React, { memo, useEffect, useState } from 'react'
+import Taro, { downloadFile } from '@tarojs/taro'
+import { View, Image, Icon, Text, Textarea } from '@tarojs/components'
 
 import './index.css'
 
@@ -24,7 +24,7 @@ const SeeImage = memo(props => {
 
   // 发送附言请求
   useEffect(() => {
-    seePictureMessage({pictureName: currentImages[clickIndex]}).then(res => setPictureMessage(res.data)).catch(err => console.log(err))
+    seePictureMessage({ pictureName: currentImages[clickIndex] }).then(res => setPictureMessage(res.data)).catch(err => console.log(err))
   }, [])
 
   // 控制附言组件
@@ -36,9 +36,9 @@ const SeeImage = memo(props => {
   const stopDefaultEvent = e => {
     e.stopPropagation()
   }
-
 // 查看原图
 const viewOriginal = () => {
+  //-----------编码练习部分·开始---------------
   if (needCompress === 0) {
     Taro.showToast({
       title: '该图已是原图，请勿重复切换',
@@ -49,10 +49,12 @@ const viewOriginal = () => {
   } else {
     setNeedCompress(0)
   }
+  //-----------编码练习部分·结束---------------
 }
 
 // 下载图片
 const download = () => {
+  //-----------编码练习部分·开始---------------
   Taro.showToast({
     title: '长按保存图片',
     icon: 'none',
@@ -71,6 +73,7 @@ const download = () => {
     },
     fail: err => { }
   })
+  //-----------编码练习部分·结束---------------
 }
 
   return (
@@ -79,14 +82,11 @@ const download = () => {
       style={`padding-top:${systemInfo.navBarHeight}px;height: calc(100vh - ${systemInfo.navBarHeight}px);`}
       onClick={e => changeFooter()}
     >
-      <View className='pictureCount'
-            style={`top:${systemInfo.navBarHeight + 10}px;left:50%;`}>{`${clickIndex + 1}/${currentImages.length}`}</View>
-      <Icon type='cancel' color='#999' size='30' className='cancelIcon'
-            style={`top:${systemInfo.navBarHeight + 10}px;right:12px`} onClick={e => props.changeComponents()}/>
+      <View className='pictureCount' style={`top:${systemInfo.navBarHeight + 10}px;left:50%;`}>{`${clickIndex + 1}/${currentImages.length}`}</View>
+      <Icon type='cancel' color='#999' size='30' className='cancelIcon' style={`top:${systemInfo.navBarHeight + 10}px;right:12px`} onClick={e => props.changeComponents()} />
       <View className='showImage'
       >
-        <Image src={`${reviewImages}?pictureName=${currentImages[clickIndex]}&needCompress=${needCompress}`}
-               mode='widthFix' showMenuByLongpress/>
+        <Image src={`${reviewImages}?pictureName=${currentImages[clickIndex]}&needCompress=${needCompress}`} mode='widthFix' showMenuByLongpress />
       </View>
       {
         footerStatus &&
@@ -100,7 +100,7 @@ const download = () => {
           </View>
         </View>
       }
-    </View>
+    </View >
   )
 })
 

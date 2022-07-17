@@ -1,6 +1,6 @@
-import React, {memo, useEffect, useState} from 'react'
-import Taro, {useDidShow} from '@tarojs/taro'
-import {View, Image, Text} from '@tarojs/components'
+import React, { memo, useEffect, useState } from 'react'
+import Taro, { useDidShow } from '@tarojs/taro'
+import { View, Image, Text } from '@tarojs/components'
 
 import dwLoading from '../../assets/img/dwLoding.png'
 
@@ -18,67 +18,54 @@ const Home = memo(props => {
   useEffect(() => {
     Taro.authorize({
       scope: 'scope.userLocation',
-      success: (res) => {
-        setLocationAuthorize(true)
-      },
-      fail: (res) => {
-        setLocationAuthorize(false)
-      },
-      complete: () => {
-      }
+      success: (res) => { setLocationAuthorize(true) },
+      fail: (res) => { setLocationAuthorize(false) },
+      complete: () => { }
     })
     setLocationEnabled(Taro.getSystemInfoSync().locationEnabled)
   }, [])
   // 权限申请
   const setTheLocation = () => {
-    const setTheLocation = () => {
-      Taro.getSetting({
-        success: res => {
-          //如果当前已经获取过，则转到首页
-          if (locationAuthorize && locationEnabled) {
-            jumpHome()
+    Taro.getSetting({
+      success: res => {
+        //如果当前已经获取过，则转到首页
+        if (locationAuthorize && locationEnabled) {
+          jumpHome()
+        } else {
+          if (!res.authSetting['scope.userLocation']) {
+            Taro.showModal({
+              content: '检测到您未开启微信位置授权，是否前往开启',
+              confirmText: '前往开启',
+              success: res => {
+                if (res.confirm) {
+                  Taro.openSetting({
+                    success: res => {
+                      setLocationAuthorize(res.authSetting['scope.userLocation'])
+                    },
+                    fail: err => { },
+                    complete: () => { }
+                  })
+                }
+              }
+            })
           } else {
-            if (!res.authSetting['scope.userLocation']) {
-              Taro.showModal({
-                content: '检测到您未开启微信位置授权，是否前往开启',
-                confirmText: '前往开启',
-                success: res => {
-                  if (res.confirm) {
-                    Taro.openSetting({
-                      success: res => {
-                        setLocationAuthorize(res.authSetting['scope.userLocation'])
-                      },
-                      fail: err => {
-                      },
-                      complete: () => {
-                      }
-                    })
-                  }
+            Taro.showModal({
+              content: '定位失败，请检查您的网络或者手机系统定位是否开启',
+              confirmText: '重新定位',
+              success: res => {
+                if (res.confirm) {
+                  setLocationEnabled(Taro.getSystemInfoSync().locationEnabled)
                 }
-              })
-            } else {
-              Taro.showModal({
-                content: '定位失败，请检查您的网络或者手机系统定位是否开启',
-                confirmText: '重新定位',
-                success: res => {
-                  if (res.confirm) {
-                    setLocationEnabled(Taro.getSystemInfoSync().locationEnabled)
-                  }
-                },
-                fail: err => {
-                },
-                complete: () => {
-                }
-              })
-            }
+              },
+              fail: err => { },
+              complete: () => { }
+            })
           }
-        },
-        fail: err => {
-        },
-        complete: () => {
         }
-      })
-    }
+      },
+      fail: err => { },
+      complete: () => { }
+    })
   }
 
   const jumpHome = () => {
@@ -92,7 +79,7 @@ const Home = memo(props => {
       {locationAuthorize === '' ?
         <View className='loading'>
           <View className='dwLoading'>
-            <Image src={dwLoading}/>
+            <Image src={dwLoading} />
           </View>
           <Text>定位中...</Text>
         </View>

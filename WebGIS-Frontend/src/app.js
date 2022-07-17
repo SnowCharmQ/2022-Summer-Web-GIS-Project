@@ -1,7 +1,7 @@
-import {Component} from 'react'
+import { Component } from 'react'
 import Taro from '@tarojs/taro'
 
-import {Provider} from 'react-redux'
+import { Provider } from 'react-redux'
 import store from './store'
 
 import './app.css'
@@ -11,7 +11,6 @@ class App extends Component {
     super(props)
     this.systemInfo = {}
   }
-
   onLaunch() {
     // 获取系统信息，拿到状态栏高度
     const getSystemInfo = Taro.getSystemInfoSync()
@@ -29,17 +28,13 @@ class App extends Component {
     Object.assign(this.systemInfo, globalNavHeight)
   }
 
-  componentDidMount() {
-  }
+  componentDidMount() { }
 
-  componentDidShow() {
-  }
+  componentDidShow() { }
 
-  componentDidHide() {
-  }
+  componentDidHide() { }
 
-  componentDidCatchError() {
-  }
+  componentDidCatchError() { }
 
   // this.props.children 是将要会渲染的页面
   render() {

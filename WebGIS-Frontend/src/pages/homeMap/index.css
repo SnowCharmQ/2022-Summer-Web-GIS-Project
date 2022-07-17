@@ -1,16 +1,14 @@
-.bubbleContent {
+.bubbleContent{
   position: relative;
 }
-
-.bubble {
+.bubble{
   width: 150px;
   height: 150px;
   background-color: #ffffff;
   border-radius: 12px;
   padding: 10px;
 }
-
-.bubbleContent .imgNum {
+.bubbleContent .imgNum{
   position: absolute;
   top: 0px;
   right: 0px;
@@ -26,8 +24,7 @@
   border-radius: 40%;
   background-color: red;
 }
-
-.location {
+.location{
   position: fixed;
   display: flex;
   align-items: center;
@@ -39,13 +36,11 @@
   background-color: #025cfa;
   border-radius: 50%;
 }
-
-.locationImg {
+.locationImg{
   width: 50%;
   height: 50%;
 }
-
-.upload {
+.upload{
   position: fixed;
   display: flex;
   align-items: center;
@@ -60,8 +55,7 @@
   background-color: #025cfa;
   border-radius: 50%;
 }
-
-.layer {
+.layer{
   position: fixed;
   display: flex;
   align-items: center;
@@ -74,8 +68,7 @@
   font-size: 52px;
   background-color: #fff;
 }
-
-.layerImg {
+.layerImg{
   width: 50%;
   height: 50%;
 }

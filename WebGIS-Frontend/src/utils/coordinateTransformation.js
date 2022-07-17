@@ -1,3 +1,4 @@
+
 /**
  *  判断经纬度是否超出中国境内
  */
@@ -10,50 +11,60 @@ function isLocationOutOfChina(latitude, longitude) {
 /**
  *  将GCJ-02(火星坐标)转为WGS-84:
  */
-function transformFromGCJToWGS(latitude, longitude) {
-  function transformFromGCJToWGS(latitude, longitude) {
-    let threshold = 0.00001;
-    // 经纬度边界
-    let minLat = latitude - 0.5;
-    let maxLat = latitude + 0.5;
-    let minLng = longitude - 0.5;
-    let maxLng = longitude + 0.5;
+/**
+ *  将国家2000转为WGS-84:
+ */
+ function transformFromGCJToWGS(latitude, longitude) {
+  //-----------编码练习部分·开始---------------
+  let threshold = 0.00001;
+  // 经纬度边界
+  let minLat = latitude - 0.5;
+  let maxLat = latitude + 0.5;
+  let minLng = longitude - 0.5;
+  let maxLng = longitude + 0.5;
 
-    let delta = 1;
-    let maxIteration = 30;
+  let delta = 1;
+  let maxIteration = 30;
 
-    while (true) {
-      let leftBottom = transformFromWGSToGCJ(minLat, minLng);
-      let rightBottom = transformFromWGSToGCJ(minLat, maxLng);
-      let leftUp = transformFromWGSToGCJ(maxLat, minLng);
-      let midPoint = transformFromWGSToGCJ((minLat + maxLat) / 2, (minLng + maxLng) / 2);
-      delta = Math.abs(midPoint.latitude - latitude) + Math.abs(midPoint.longitude - longitude);
+  while (true) {
+    let leftBottom = transformFromWGSToGCJ(minLat, minLng);
+    let rightBottom = transformFromWGSToGCJ(minLat, maxLng);
+    let leftUp = transformFromWGSToGCJ(maxLat, minLng);
+    let midPoint = transformFromWGSToGCJ((minLat + maxLat) / 2, (minLng + maxLng) / 2);
+    delta = Math.abs(midPoint.latitude - latitude) + Math.abs(midPoint.longitude - longitude);
 
-      if (maxIteration-- <= 0 || delta <= threshold) {
-        return {latitude: (minLat + maxLat) / 2, longitude: (minLng + maxLng) / 2};
-      }
+    if (maxIteration-- <= 0 || delta <= threshold) {
+      return { latitude: (minLat + maxLat) / 2, longitude: (minLng + maxLng) / 2 };
+    }
 
-      if (isContains({latitude: latitude, longitude: longitude}, leftBottom, midPoint)) {
-        maxLat = (minLat + maxLat) / 2;
-        maxLng = (minLng + maxLng) / 2;
-      } else if (isContains({latitude: latitude, longitude: longitude}, rightBottom, midPoint)) {
-        maxLat = (minLat + maxLat) / 2;
-        minLng = (minLng + maxLng) / 2;
-      } else if (isContains({latitude: latitude, longitude: longitude}, leftUp, midPoint)) {
-        minLat = (minLat + maxLat) / 2;
-        maxLng = (minLng + maxLng) / 2;
-      } else {
-        minLat = (minLat + maxLat) / 2;
-        minLng = (minLng + maxLng) / 2;
-      }
+    if (isContains({ latitude: latitude, longitude: longitude }, leftBottom, midPoint)) {
+      maxLat = (minLat + maxLat) / 2;
+      maxLng = (minLng + maxLng) / 2;
+    }
+    else if (isContains({ latitude: latitude, longitude: longitude }, rightBottom, midPoint)) {
+      maxLat = (minLat + maxLat) / 2;
+      minLng = (minLng + maxLng) / 2;
+    }
+    else if (isContains({ latitude: latitude, longitude: longitude }, leftUp, midPoint)) {
+      minLat = (minLat + maxLat) / 2;
+      maxLng = (minLng + maxLng) / 2;
+    }
+    else {
+      minLat = (minLat + maxLat) / 2;
+      minLng = (minLng + maxLng) / 2;
     }
   }
+  //-----------编码练习部分·结束---------------
 }
 
 /**
  *  将WGS-84(国际标准)转为GCJ-02(火星坐标):
  */
-function transformFromWGSToGCJ(latitude, longitude) {
+/**
+ *  将WGS-84(国际标准)转为GCJ-02(火星坐标):
+ */
+ function transformFromWGSToGCJ(latitude, longitude) {
+  //-----------编码练习部分·开始---------------
   let lat = "";
   let lon = "";
   let ee = 0.00669342162296594323;
@@ -63,7 +74,8 @@ function transformFromWGSToGCJ(latitude, longitude) {
   if (isLocationOutOfChina(latitude, longitude)) {
     lat = latitude;
     lon = longitude;
-  } else {
+  }
+  else {
     let adjustLat = transformLatWithXY(longitude - 105.0, latitude - 35.0);
     let adjustLon = transformLonWithXY(longitude - 105.0, latitude - 35.0);
     let radLat = latitude / 180.0 * pi;
@@ -75,9 +87,9 @@ function transformFromWGSToGCJ(latitude, longitude) {
     latitude = latitude + adjustLat;
     longitude = longitude + adjustLon;
   }
-  return {latitude: latitude, longitude: longitude};
+  return { latitude: latitude, longitude: longitude };
+  //-----------编码练习部分·结束---------------
 }
-
 /**
  *  将GCJ-02(火星坐标)转为百度坐标:
  */
@@ -89,7 +101,7 @@ function transformFromGCJToBaidu(latitude, longitude) {
   let a_latitude = (z * Math.sin(theta) + 0.006);
   let a_longitude = (z * Math.cos(theta) + 0.0065);
 
-  return {latitude: a_latitude, longitude: a_longitude};
+  return { latitude: a_latitude, longitude: a_longitude };
 }
 
 /**
@@ -105,7 +117,7 @@ function transformFromBaiduToGCJ(latitude, longitude) {
   let a_latitude = z * Math.sin(theta);
   let a_longitude = z * Math.cos(theta);
 
-  return {latitude: a_latitude, longitude: a_longitude};
+  return { latitude: a_latitude, longitude: a_longitude };
 }
 
 function isContains(point, p1, p2) {
@@ -129,6 +141,8 @@ function transformLonWithXY(x, y) {
   lon += (150.0 * Math.sin(x / 12.0 * pi) + 300.0 * Math.sin(x / 30.0 * pi)) * 2.0 / 3.0;
   return lon;
 }
+
+
 
 module.exports = {
   isLocationOutOfChina: isLocationOutOfChina,

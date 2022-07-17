@@ -1,73 +1,67 @@
-.content {
+.content{
   width: calc(100vw - 40px);
   height: calc(100vh - 40px);
   padding: 20px;
   background-color: #f2f1ed;
 }
-
-.input textarea {
+.input textarea{
   width: 100%;
   min-height: 200px;
   margin-bottom: 80px;
 }
-
-.uploadFile {
+.uploadFile{
   display: flex;
   flex-wrap: wrap;
 }
-
-.uploadFile .file {
+.uploadFile .file{
   position: relative;
   width: 200px;
   height: 200px;
   margin: 0 20px 20px 0;
 }
-
-.uploadFile .file .delete {
+          
+.uploadFile .file .delete{
   position: absolute;
   top: 0;
   right: 0;
-  transform: translate(50%, -50%);
+  transform: translate(50%,-50%);
   background-color: #F0F0F0;
   border-radius: 50%;
 }
-
-.uploadFile image {
+  
+.uploadFile image{
   width: 100%;
   height: 100%;
 }
-
-.upload {
+.upload{
   position: relative;
   width: 200px;
   height: 200px;
   margin: 0 20px 20px 0;
   background-color: #fff7f7
 }
-
-.upload::before {
+.upload::before{
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%,-50%);
   width: 30%;
   height: 5px;
   background-color: #666;
-}
-
-.upload::after {
+          }
+            
+.upload::after{
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%,-50%);
   width: 5px;
   height: 30%;
   background-color: #666;
 }
-
-.submit {
+.submit{
   width: calc(100% - 40px);
   margin-top: 20px;
   padding: 20px;
@@ -76,4 +70,4 @@
   color: #fff;
   font-size: 36px;
   border-radius: 46px;
-}
+}    

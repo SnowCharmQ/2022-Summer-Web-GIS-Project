@@ -1,7 +1,7 @@
-import React, {memo, useEffect, useState} from 'react'
-import {connect} from 'react-redux'
-import Taro, {useRouter} from '@tarojs/taro'
-import {View, Image} from '@tarojs/components'
+import React, { memo, useEffect, useState } from 'react'
+import { connect } from 'react-redux'
+import Taro, { useRouter } from '@tarojs/taro'
+import { View, Image } from '@tarojs/components'
 
 // 网络请求api
 import {
@@ -42,7 +42,7 @@ const ViewPicture = memo(props => {
     try {
       // 根据传递过来的markerId值从redux里面获取对应区域的数据
       const currentArea = props.HomeDate.data[Number(router) - 1]
-      const res = await seeWithinAnAreaPhotos({boxExtent: currentArea.boxExtent})
+      const res = await seeWithinAnAreaPhotos({ boxExtent: currentArea.boxExtent })
       setArea(currentArea)
       setCurrentImg([...res.data])
     } catch (error) {
@@ -85,11 +85,10 @@ const ViewPicture = memo(props => {
       {
         seeImageStatus
           ?
-          <SeeImage setCurrentImg={currentImg} clickIndex={clickIndex} seeArtist={seeArtist} needCompress={needCompress}
-                    changeComponents={changeComponents}/>
+          <SeeImage setCurrentImg={currentImg} clickIndex={clickIndex} seeArtist={seeArtist} needCompress={needCompress} changeComponents={changeComponents} />
           :
           <View className='content'>
-            <Navigation area={area}/>
+            <Navigation area={area} />
             <View className='imgContent'>
               {
                 currentImg && currentImg.map((item, index) => {
@@ -101,7 +100,7 @@ const ViewPicture = memo(props => {
                       style={`width:${(screenWidth / 4) - 2}px; height:${(screenWidth / 4) - 2}px;`}
                       onClick={e => clickSeeImage(index)}
                     >
-                      {item && <Image src={item} style={`width:100%;`}/>}
+                      {item && <Image src={item} style={`width:100%;`} />}
                     </View>
                   )
                 })

@@ -1,6 +1,6 @@
-import React, {memo, useState} from 'react'
+import React, { memo, useState } from 'react'
 import Taro from '@tarojs/taro'
-import {Textarea, View, Image, Icon} from '@tarojs/components'
+import { Textarea, View, Image, Icon } from '@tarojs/components'
 
 import './index.css'
 // 网络请求
@@ -18,6 +18,7 @@ const Upload = memo(props => {
 
   // 选择图片
   const uploadImage = () => {
+    //-----------编码练习部分·开始---------------
     Taro.chooseImage({
       count: 9 - uploadImageNum,
       sizeType: ['original'],
@@ -33,6 +34,7 @@ const Upload = memo(props => {
         }
       }
     })
+    //-----------编码练习部分·结束---------------
   }
 
   // 预览图片
@@ -70,13 +72,14 @@ const Upload = memo(props => {
   // 输入事件
   function changeInput(e) {
     return function () {
-      const {value} = e.detail
+      const { value } = e.detail
       setValue(value)
     }
   }
 
 // 点击提交照片与附言
 const submit = async () => {
+  //-----------编码练习部分·开始---------------
   if (uploadImagePath && uploadImagePath.length !== 0) {
     Taro.showLoading({
       title: '提交中...'
@@ -131,6 +134,7 @@ const submit = async () => {
       mask: true
     })
   }
+  //-----------编码练习部分·结束---------------
 }
 
   return (
