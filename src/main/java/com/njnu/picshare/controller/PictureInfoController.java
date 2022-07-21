@@ -26,36 +26,40 @@ public class PictureInfoController extends BaseController {
 
     /**
      * 上传照片
-     * @param file 用户上传的照片
-     * @param location 用户当前所处的位置
+     *
+     * @param file       用户上传的照片
+     * @param location   用户当前所处的位置
      * @param attachment 照片的附言
      * @return
      */
     @PostMapping("/uploadPicture")
-    public JsonResult uploadPictureFile(@RequestParam("file") MultipartFile file, @RequestParam("location") String location, @RequestParam(value = "attachment",defaultValue="") String attachment){
+    public JsonResult uploadPictureFile(@RequestParam("file") MultipartFile file, @RequestParam("location") String location, @RequestParam(value = "attachment", defaultValue = "") String attachment) {
         FileResult message = pictureInfoService.uploadPictureFile(file, location, attachment);
         json.setData(message);
         return json;
     }
 
     /**
-     *  通过前端的屏幕视角区域切割为多个小区域，并返回每个小区域里面的照片数量
+     * 通过前端的屏幕视角区域切割为多个小区域，并返回每个小区域里面的照片数量
+     *
      * @param viewBoundary 屏幕视角区域
      * @return [{中心经纬度、边界经纬度、区域内照片数量、第一张照片的URL}]
      */
     @GetMapping("/picturesInAreaByBox")
-    public JsonResult getPicturesInAreaBoxByView(@RequestParam("viewBoundary")String viewBoundary){
+    public JsonResult getPicturesInAreaBoxByView(@RequestParam("viewBoundary") String viewBoundary) {
         List<BoxAreaInfo> boxAreaInfoList = pictureInfoService.selectBoxAreaPictureInfoByView(viewBoundary);
         json.setData(boxAreaInfoList);
         return json;
     }
+
     /**
      * 通过边界经纬度查询该区域的所有照片，返回相关照片的URL
      * [照片1url，照片2url...]
+     *
      * @return
      */
     @GetMapping("/picturesByBox")
-    public JsonResult getPictureListByBox(@RequestParam("boxExtent")String boxExtent){
+    public JsonResult getPictureListByBox(@RequestParam("boxExtent") String boxExtent) {
         List<String> pictureNameList = pictureInfoService.selectPictureListByBox(boxExtent);
         json.setData(pictureNameList);
         return json;
@@ -63,18 +67,19 @@ public class PictureInfoController extends BaseController {
 
     /**
      * 查看照片
+     *
      * @param pictureName
      * @param needCompress
      * @throws FileNotFoundException
      * @throws IOException
      */
     @GetMapping("/viewPicture")
-    public void viewPictureFile(@RequestParam("pictureName") String pictureName, @RequestParam("needCompress") Integer needCompress) throws FileNotFoundException, IOException{
+    public void viewPictureFile(@RequestParam("pictureName") String pictureName, @RequestParam("needCompress") Integer needCompress) throws FileNotFoundException, IOException {
         //1、根据照片名称找到文件路径；
         String realPath;
-        if (needCompress == 1){
+        if (needCompress == 1) {
             realPath = pictureInfoService.selectPictureInfoByName(pictureName, true);//查看缩略图
-        }else {
+        } else {
             realPath = pictureInfoService.selectPictureInfoByName(pictureName, false);//查看原图
         }
         if (realPath == null) return;
@@ -97,10 +102,11 @@ public class PictureInfoController extends BaseController {
 
     /**
      * 查看缩略图
+     *
      * @return
      */
     @GetMapping("/viewThumbnailPicture")
-    public void viewThumbnailPicture(@RequestParam("pictureName") String pictureName) throws IOException{
+    public void viewThumbnailPicture(@RequestParam("pictureName") String pictureName) throws IOException {
         String fileType = pictureName.substring(pictureName.lastIndexOf(".") + 1);
         FileInputStream inputStream = pictureInfoService.getThumbnailPicture(pictureName);
         int i = inputStream.available();
@@ -112,16 +118,20 @@ public class PictureInfoController extends BaseController {
         //设置发送到客户端的响应内容类型
         response.setContentType("image/" + fileType);
         OutputStream out = response.getOutputStream();
-        out.write(buff);
-        //关闭响应输出流
-        out.close();
+        if (out != null) {
+            out.write(buff);
+            //关闭响应输出流
+            out.close();
+        }
     }
+
     /**
      * 查看照片附言
+     *
      * @return
      */
     @GetMapping("/viewAttachment")
-    public JsonResult viewPictureAttachment(@RequestParam("pictureName") String pictureName){
+    public JsonResult viewPictureAttachment(@RequestParam("pictureName") String pictureName) {
         String attachment = pictureInfoService.selectPictureAttachmentByName(pictureName);
         if (attachment == null) attachment = "";
         json.setData(attachment);
@@ -129,7 +139,7 @@ public class PictureInfoController extends BaseController {
     }
 
     @PostMapping("/deletePicture")
-    public JsonResult deletePictureFile(@RequestParam("pictureName") String pictureName){
+    public JsonResult deletePictureFile(@RequestParam("pictureName") String pictureName) {
         FileResult message = pictureInfoService.deletePictureFileByName(pictureName);
         json.setData(message);
         json.setMsg(message.getMessage());

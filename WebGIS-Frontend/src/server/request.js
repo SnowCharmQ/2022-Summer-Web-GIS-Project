@@ -1,8 +1,8 @@
 import Taro from '@tarojs/taro'
 
 // const HOST = 'http://146.56.250.230:8888/' //服务器IP地址
-// const HOST = 'http://10.25.7.102:8888/' //本机IP地址
-const HOST = "http://124.221.22.144:8888/"//腾讯云服务器地址
+const HOST = 'http://10.25.7.102:8888/' //本机IP地址
+// const HOST = "http://124.221.22.144:8888/"//腾讯云服务器地址
 
 const http = (params) => new Promise((resolve, reject) => {
   Taro.request({
