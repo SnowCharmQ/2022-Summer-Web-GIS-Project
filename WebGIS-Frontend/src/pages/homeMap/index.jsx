@@ -43,14 +43,12 @@ const HomeMap = memo(props => {
   const [showSatelliteMap, setShowSatelliteMap] = useState(false)
   // 获取当前位置
   useEffect(() => {
-    //-----------编码练习部分·开始---------------
     Taro.getLocation({
       success: res => {
         setLongitude(res.longitude)
         setLatitude(res.latitude)
       }
     })
-    //-----------编码练习部分·结束---------------
   }, [])
 
   // 页面渲染完成时触发
@@ -83,19 +81,19 @@ const HomeMap = memo(props => {
   }
 
   // 地图发生变化时触发
-// 地图显示范围发生变化时触发
-const regionChange = (e) => {
-  const { type } = e
-  if (type === 'end') {
-    const { detail: { region } } = e
-    const { northeast, southwest } = region
-    const northeastTransformToWGS = transformFromGCJToWGS(northeast.latitude, northeast.longitude)
-    const southwestTransformToWGS = transformFromGCJToWGS(southwest.latitude, southwest.longitude)
-    setCoordinate([{ ...northeastTransformToWGS }, { ...southwestTransformToWGS }])
+  // 地图显示范围发生变化时触发
+  const regionChange = (e) => {
+    const { type } = e
+    if (type === 'end') {
+      const { detail: { region } } = e
+      const { northeast, southwest } = region
+      const northeastTransformToWGS = transformFromGCJToWGS(northeast.latitude, northeast.longitude)
+      const southwestTransformToWGS = transformFromGCJToWGS(southwest.latitude, southwest.longitude)
+      setCoordinate([{ ...northeastTransformToWGS }, { ...southwestTransformToWGS }])
+    }
   }
-}
   // 当前手机屏幕内的照片数据
-// 当前手机屏幕内的照片数据
+  // 当前手机屏幕内的照片数据
   useEffect(() => {
     if (props.HomeData) {
       const CustomCallout = props.HomeData.data.map((item, index) => {
@@ -119,7 +117,8 @@ const regionChange = (e) => {
           boxExtent: item.boxExtent
         }
       })
-      setCustomCallout(CustomCallout);}
+      setCustomCallout(CustomCallout);
+    }
   }, [props.HomeData])
 
   // 上传图片
@@ -142,13 +141,12 @@ const regionChange = (e) => {
     })
   }
 
-  const switchMap = e =>{
+  const switchMap = e => {
     setShowSatelliteMap(!showSatelliteMap);
   }
 
   return (
     // 网络地图注册与加载
-    //-----------编码练习部分·开始---------------
     <Map
       id='mapid'
       setting={{}}
@@ -165,36 +163,35 @@ const regionChange = (e) => {
       onCalloutTap={e => jumpViewPicturePage(e)}
     >
       {/* 地图控件配置区域 */}
-{/* 弹窗层控件 */}
-<CoverView slot='callout'>
-  {
-    customCallout && customCallout.length > 0 && customCallout.map(item => (
-     /** 自定义样式的 callout */
-      <CoverView markerId={item.id} key={item.id} className='bubbleContent'>
-        <CoverView className='bubble'>
-          {item.firstPictureName && <CoverImage src={item.firstPictureName} key={item.id} />}
-        </CoverView>
-        <CoverView className='imgNum'>{Number(item.pictureCount) > 99 ? '···' : item.pictureCount}</CoverView>
+      {/* 弹窗层控件 */}
+      <CoverView slot='callout'>
+        {
+          customCallout && customCallout.length > 0 && customCallout.map(item => (
+            /** 自定义样式的 callout */
+            <CoverView markerId={item.id} key={item.id} className='bubbleContent'>
+              <CoverView className='bubble'>
+                {item.firstPictureName && <CoverImage src={item.firstPictureName} key={item.id} />}
+              </CoverView>
+              <CoverView className='imgNum'>{Number(item.pictureCount) > 99 ? '···' : item.pictureCount}</CoverView>
+            </CoverView>
+          ))
+        }
       </CoverView>
-    ))
-  }
-</CoverView>
-{/* 底图切换控件 */}
-<CoverView className='layer' onClick={e => switchMap()}>
-  <CoverImage src={layer} className='LayerImg'></CoverImage>
-</CoverView>
-{/* 当前定位控件 */}
-<CoverView className='location' onClick={e => onClickLocation()}>
-  <CoverImage src={dw} className='locationImg'></CoverImage>
-</CoverView>
-{/* 上传图片控件 */}
-<CoverView className='upload' onClick={e => jumpUploadFilesPage()}>
-  <CoverView>+</CoverView>
-</CoverView>
+      {/* 底图切换控件 */}
+      <CoverView className='layer' onClick={e => switchMap()}>
+        <CoverImage src={layer} className='LayerImg'></CoverImage>
+      </CoverView>
+      {/* 当前定位控件 */}
+      <CoverView className='location' onClick={e => onClickLocation()}>
+        <CoverImage src={dw} className='locationImg'></CoverImage>
+      </CoverView>
+      {/* 上传图片控件 */}
+      <CoverView className='upload' onClick={e => jumpUploadFilesPage()}>
+        <CoverView>+</CoverView>
+      </CoverView>
 
     </Map>
-)
-  //-----------编码练习部分·结束--------------
+  )
 })
 
 const mapStateToProps = state => ({

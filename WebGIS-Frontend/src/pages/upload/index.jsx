@@ -4,7 +4,7 @@ import { Textarea, View, Image, Icon } from '@tarojs/components'
 
 import './index.css'
 // 网络请求
-import {uploadImgUrl} from '../../api/index'
+import { uploadImgUrl } from '../../api/index'
 
 const Upload = memo(props => {
   // 选择的图片数量
@@ -18,7 +18,6 @@ const Upload = memo(props => {
 
   // 选择图片
   const uploadImage = () => {
-    //-----------编码练习部分·开始---------------
     Taro.chooseImage({
       count: 9 - uploadImageNum,
       sizeType: ['original'],
@@ -34,7 +33,6 @@ const Upload = memo(props => {
         }
       }
     })
-    //-----------编码练习部分·结束---------------
   }
 
   // 预览图片
@@ -77,65 +75,63 @@ const Upload = memo(props => {
     }
   }
 
-// 点击提交照片与附言
-const submit = async () => {
-  //-----------编码练习部分·开始---------------
-  if (uploadImagePath && uploadImagePath.length !== 0) {
-    Taro.showLoading({
-      title: '提交中...'
-    })
-    // 对输入内容过滤空格符
-    const filtrateSpaceValue = value.replace(/\s+/g, '')
-    // 获取当前经纬度
-    const { longitude, latitude } = await Taro.getLocation()
-    const location = `${longitude},${latitude}`;
-    // promise.all 统一上传多张图片，某一张失败，就走catch回调
-    Promise.all(uploadImagePath.map(item => Taro.uploadFile({
-      url: uploadImgUrl,
-      name: 'file',
-      filePath: item,
-      formData: {
-        attachment: filtrateSpaceValue,
-        location
-      },
-      success: res => console.log(res),
-      fail: err => console.log(err)
-    })))
-      .then(res => {
-        Taro.hideLoading()
-        Taro.showToast({
-          title: '提交成功',
-          icon: 'success',
-          duration: 2000,
-          mask: true,
-          success: res => {
-            setTimeout(() => {
-              Taro.navigateBack({
-                delta: 1
-              })
-            }, 2000)
-          }
-        })
+  // 点击提交照片与附言
+  const submit = async () => {
+    if (uploadImagePath && uploadImagePath.length !== 0) {
+      Taro.showLoading({
+        title: '提交中...'
       })
-      .catch(err => {
-        Taro.hideLoading()
-        Taro.showToast({
-          title: '提交失败，请稍后重试',
-          icon: 'none',
-          duration: 2000,
-          mask: true
+      // 对输入内容过滤空格符
+      const filtrateSpaceValue = value.replace(/\s+/g, '')
+      // 获取当前经纬度
+      const { longitude, latitude } = await Taro.getLocation()
+      const location = `${longitude},${latitude}`;
+      // promise.all 统一上传多张图片，某一张失败，就走catch回调
+      Promise.all(uploadImagePath.map(item => Taro.uploadFile({
+        url: uploadImgUrl,
+        name: 'file',
+        filePath: item,
+        formData: {
+          attachment: filtrateSpaceValue,
+          location
+        },
+        success: res => console.log(res),
+        fail: err => console.log(err)
+      })))
+        .then(res => {
+          Taro.hideLoading()
+          Taro.showToast({
+            title: '提交成功',
+            icon: 'success',
+            duration: 2000,
+            mask: true,
+            success: res => {
+              setTimeout(() => {
+                Taro.navigateBack({
+                  delta: 1
+                })
+              }, 2000)
+            }
+          })
         })
+        .catch(err => {
+          Taro.hideLoading()
+          Taro.showToast({
+            title: '提交失败，请稍后重试',
+            icon: 'none',
+            duration: 2000,
+            mask: true
+          })
+        })
+    } else {
+      Taro.showToast({
+        title: '请选择要上传的图片',
+        icon: 'none',
+        duration: 2000,
+        mask: true
       })
-  } else {
-    Taro.showToast({
-      title: '请选择要上传的图片',
-      icon: 'none',
-      duration: 2000,
-      mask: true
-    })
+    }
   }
-  //-----------编码练习部分·结束---------------
-}
 
   return (
     <View className='content'>

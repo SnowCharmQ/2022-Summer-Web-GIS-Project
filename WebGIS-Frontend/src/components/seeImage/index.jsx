@@ -38,7 +38,6 @@ const SeeImage = memo(props => {
   }
 // 查看原图
 const viewOriginal = () => {
-  //-----------编码练习部分·开始---------------
   if (needCompress === 0) {
     Taro.showToast({
       title: '该图已是原图，请勿重复切换',
@@ -49,12 +48,10 @@ const viewOriginal = () => {
   } else {
     setNeedCompress(0)
   }
-  //-----------编码练习部分·结束---------------
 }
 
 // 下载图片
 const download = () => {
-  //-----------编码练习部分·开始---------------
   Taro.showToast({
     title: '长按保存图片',
     icon: 'none',
@@ -73,7 +70,6 @@ const download = () => {
     },
     fail: err => { }
   })
-  //-----------编码练习部分·结束---------------
 }
 
   return (

@@ -14,8 +14,7 @@ function isLocationOutOfChina(latitude, longitude) {
 /**
  *  将国家2000转为WGS-84:
  */
- function transformFromGCJToWGS(latitude, longitude) {
-  //-----------编码练习部分·开始---------------
+function transformFromGCJToWGS(latitude, longitude) {
   let threshold = 0.00001;
   // 经纬度边界
   let minLat = latitude - 0.5;
@@ -54,7 +53,6 @@ function isLocationOutOfChina(latitude, longitude) {
       minLng = (minLng + maxLng) / 2;
     }
   }
-  //-----------编码练习部分·结束---------------
 }
 
 /**
@@ -63,8 +61,7 @@ function isLocationOutOfChina(latitude, longitude) {
 /**
  *  将WGS-84(国际标准)转为GCJ-02(火星坐标):
  */
- function transformFromWGSToGCJ(latitude, longitude) {
-  //-----------编码练习部分·开始---------------
+function transformFromWGSToGCJ(latitude, longitude) {
   let lat = "";
   let lon = "";
   let ee = 0.00669342162296594323;
@@ -88,7 +85,6 @@ function isLocationOutOfChina(latitude, longitude) {
     longitude = longitude + adjustLon;
   }
   return { latitude: latitude, longitude: longitude };
-  //-----------编码练习部分·结束---------------
 }
 /**
  *  将GCJ-02(火星坐标)转为百度坐标:
