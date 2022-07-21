@@ -24,12 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/30 0030日下午 20:38
- */
 @Service
-public class PictureInfoServiceImpl  implements PictureInfoService {
+public class PictureInfoServiceImpl implements PictureInfoService {
     @Autowired
     private PictureInfoMapper pictureInfoMapper;
     // 以下为图片存储路径
@@ -42,7 +38,6 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
 
     @Override
     public FileResult uploadPictureFile(MultipartFile pictureFile, String location, String attachment) {
-        //-----------编码练习部分·开始---------------
         //获取文件在服务器的储存位置
         File filePath = new File(pictureFilePath);
         if (!filePath.exists() && !filePath.isDirectory()) {
@@ -56,6 +51,7 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
         //获取原始文件名称(包含格式)
         String originalFileName = pictureFile.getOriginalFilename();
         //获取文件类型，以最后一个`.`为标识
+        assert originalFileName != null;
         String type = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
         //重新命名图片，避免重复
         String fileName = UUID.randomUUID().toString().replace("-", "") + "." + type;
@@ -66,49 +62,45 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
             //将原图保存到指定文件中
             pictureFile.transferTo(targetFile);
             // 压缩大小是否超过1.0M的图片
-            float fileSize = targetFile.length()/1024.0f/1024.0f;
-            if (fileSize > 1.0f){
+            float fileSize = targetFile.length() / 1024.0f / 1024.0f;
+            if (fileSize > 1.0f) {
                 //对超过1.0M的图片计算压缩因子
-                float fileCompressScale = PictureUtil.calculateCompresScale(fileSize);
+                float fileCompressScale = PictureUtil.calculateCompressScale(fileSize);
                 fileName = targetFile.getName();
                 //根据压缩因子对图片进行压缩，放置于压缩图片文件夹中
-                PictureUtil.compressPictureByScale(pictureFilePath+fileName, fileCompressScale,0.8f, compressPictureFilePath+fileName);
-            }else {
+                PictureUtil.compressPictureByScale(pictureFilePath + fileName, fileCompressScale, 0.8f, compressPictureFilePath + fileName);
+            } else {
                 //不超过1M，复制放置于压缩文件夹中备份
-                PictureUtil.copyPictureFile(pictureFilePath+fileName, compressPictureFilePath+fileName);
+                PictureUtil.copyPictureFile(pictureFilePath + fileName, compressPictureFilePath + fileName);
             }
             // 构建图片信息实例
             PictureInfo pictureInfo = new PictureInfo();
             pictureInfo.setPicName(fileName);//文件名
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
             Metadata metadata = ImageMetadataReader.readMetadata(targetFile);//读取图片元信息，以提取拍摄时间、拍照时的经纬度
-            Iterator<Directory> it = metadata.getDirectories().iterator();
-            while (it.hasNext()) {
-                Directory exif = it.next();
-                Iterator<Tag> tags = exif.getTags().iterator();
-                while (tags.hasNext()) {
-                    Tag tag = (Tag) tags.next();
-                    switch (tag.getTagName()){
+            for (Directory exif : metadata.getDirectories()) {
+                for (Tag tag : exif.getTags()) {
+                    switch (tag.getTagName()) {
                         case "Date/Time":
                             Date date = simpleDateFormat.parse(tag.getDescription());
                             pictureInfo.setShootTime(date);
                             break;
                         case "Date/Time Original":
-                            if (pictureInfo.getShootTime() == null){
+                            if (pictureInfo.getShootTime() == null) {
                                 pictureInfo.setShootTime(simpleDateFormat.parse(tag.getDescription()));
                             }
                             break;
                         case "GPS Latitude":
-                            pictureInfo.setLatitude(GeoProcessUtil.tranformDMSToDegree(tag.getDescription()));
+                            pictureInfo.setLatitude(GeoProcessUtil.transformDMSToDegree(tag.getDescription()));
                             break;
                         case "GPS Longitude":
-                            pictureInfo.setLongitude(GeoProcessUtil.tranformDMSToDegree(tag.getDescription()));
+                            pictureInfo.setLongitude(GeoProcessUtil.transformDMSToDegree(tag.getDescription()));
                             break;
                     }
                 }
             }
             //若图片在上传之间已经经过压缩，则图片元信息中无经纬度，此时以当前上传图片的位置作为补充
-            if (pictureInfo.getLongitude() == null || pictureInfo.getLatitude() == null && !"".equals(location)){
+            if (pictureInfo.getLongitude() == null || pictureInfo.getLatitude() == null && !"".equals(location)) {
                 String[] locations = location.split(",");
                 pictureInfo.setLongitude(Double.parseDouble(locations[0]));
                 pictureInfo.setLatitude(Double.parseDouble(locations[1]));
@@ -123,47 +115,42 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
         } catch (IOException e) {
             //捕获处理相关的错误
             e.printStackTrace();
-            return new FileResult(false, "上传失败","");
-        }catch (ImageProcessingException e){
+            return new FileResult(false, "上传失败", "");
+        } catch (ImageProcessingException e) {
             e.printStackTrace();
-            return new FileResult(false, "图片信息提取失败","");
-        }catch (ParseException e){
+            return new FileResult(false, "图片信息提取失败", "");
+        } catch (ParseException e) {
             e.printStackTrace();
-            return new FileResult(false, "图片日期信息转换失败","");
-        }catch (NullPointerException e){
+            return new FileResult(false, "图片日期信息转换失败", "");
+        } catch (NullPointerException e) {
             e.printStackTrace();
-            return new FileResult(false, "出现空指针","");
+            return new FileResult(false, "出现空指针", "");
         }
-        //-----------编码练习部分·结束---------------
     }
 
     @Override
     public List<BoxAreaInfo> selectBoxAreaPictureInfoByView(String boxArea) {
-        //-----------编码练习部分·开始---------------
         String[] boxAreaLoc = boxArea.split(",");
         double rightUpLongitude = Double.parseDouble(boxAreaLoc[0]);//右上角经度
         double rightUpLatitude = Double.parseDouble(boxAreaLoc[1]);//右上角纬度
         double leftDownLongitude = Double.parseDouble(boxAreaLoc[2]);//左下角经度
         double leftDownLatitude = Double.parseDouble(boxAreaLoc[3]);//左下角纬度
 
-        double leftUpLatitude = rightUpLatitude;
-        double rightDownLongitude = rightUpLongitude;
-
         //查询要求是四个角的坐标都要有，默认纵轴分4个，横轴分3个，即将手机屏幕分割为12个小区域逐一查询
         int rowCount = 4;
         int columnCount = 3;
-        double intervalLongitude = (rightDownLongitude - leftDownLongitude) / columnCount;//每格的经度间隔
-        double intervalLatitude = (leftUpLatitude - leftDownLatitude) / rowCount;//每格的纬度间隔
+        double intervalLongitude = (rightUpLongitude - leftDownLongitude) / columnCount;//每格的经度间隔
+        double intervalLatitude = (rightUpLatitude - leftDownLatitude) / rowCount;//每格的纬度间隔
         List<BoxAreaInfo> boxAreaInfoList = new ArrayList<>();
-        for (int row = 0; row < rowCount; row++){
-            for (int column = 0; column < columnCount; column++){
-                String leftDown = String.valueOf(leftDownLongitude + column * intervalLongitude) + " " + String.valueOf(leftDownLatitude + row * intervalLatitude);
-                String leftUp = String.valueOf(leftDownLongitude + column * intervalLongitude) + " " + String.valueOf(leftDownLatitude + (row+1) * intervalLatitude);
-                String rightUp = String.valueOf(leftDownLongitude + (column+1) * intervalLongitude) + " " + String.valueOf(leftDownLatitude + (row+1) * intervalLatitude);
-                String rightDown = String.valueOf(leftDownLongitude + (column+1) * intervalLongitude) + " " + String.valueOf(leftDownLatitude + row * intervalLatitude);
+        for (int row = 0; row < rowCount; row++) {
+            for (int column = 0; column < columnCount; column++) {
+                String leftDown = (leftDownLongitude + column * intervalLongitude) + " " + (leftDownLatitude + row * intervalLatitude);
+                String leftUp = (leftDownLongitude + column * intervalLongitude) + " " + (leftDownLatitude + (row + 1) * intervalLatitude);
+                String rightUp = (leftDownLongitude + (column + 1) * intervalLongitude) + " " + (leftDownLatitude + (row + 1) * intervalLatitude);
+                String rightDown = (leftDownLongitude + (column + 1) * intervalLongitude) + " " + (leftDownLatitude + row * intervalLatitude);
                 String geometryBox = "(" + String.join(",", leftDown, leftUp, rightUp, rightDown, leftDown) + ")";//拼接形式符合PostGIS表达的空间区域
                 List<PictureInfo> pictureInfoList = pictureInfoMapper.findPictureListByBox(geometryBox);
-                if (pictureInfoList != null && pictureInfoList.size() > 0){
+                if (pictureInfoList != null && pictureInfoList.size() > 0) {
                     BoxAreaInfo boxAreaInfo = new BoxAreaInfo();
                     boxAreaInfo.setBoxExtent(geometryBox);
                     boxAreaInfo.setPictureCount(pictureInfoList.size());
@@ -176,7 +163,6 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
             }
         }
         return boxAreaInfoList;
-        //-----------编码练习部分·结束---------------
     }
 
 
@@ -201,9 +187,9 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
         // 查询指定小区域中的图片信息
         List<PictureInfo> pictureInfoList = pictureInfoMapper.findPictureListByBox(boxArea);
         List<String> pictureUrlList = new ArrayList<>();
-        if (pictureInfoList != null){
-            for (int i = 0; i < pictureInfoList.size(); i++){
-                String pictureUrl = pictureInfoList.get(i).getPicName();//仅返回缩略图名字
+        if (pictureInfoList != null) {
+            for (PictureInfo pictureInfo : pictureInfoList) {
+                String pictureUrl = pictureInfo.getPicName();//仅返回缩略图名字
                 pictureUrlList.add(pictureUrl);
             }
         }
@@ -219,12 +205,11 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
             File compressFile = new File(deleteCompressPath);//删除压缩图
             if (compressFile.exists())//图片是否存在
                 compressFile.delete();
-
             File originFile = new File(deleteOriginPath);//删除原图
             if (originFile.exists())
                 originFile.delete();
             return new FileResult(true, "删除成功");
-        }catch (Exception e){
+        } catch (Exception e) {
             return new FileResult(false, "删除失败");
         }
     }
@@ -235,7 +220,7 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
     }
 
     @Override
-    public FileInputStream getThumbnailPicture(String pictureName){
+    public FileInputStream getThumbnailPicture(String pictureName) {
         //获取缩略文件存储位置
         File thumbnailFilePath = new File(thumbnailPictureFilePath);
         if (!thumbnailFilePath.exists() && !thumbnailFilePath.isDirectory()) {
@@ -244,12 +229,12 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
         FileInputStream inputStream = null;
         try {
             File file = new File(thumbnailPictureFilePath + pictureName);
-            if (!file.exists()){
+            if (!file.exists()) {
                 // 将压缩图全部转换为指定大小的缩略图
                 PictureUtil.compressPictureBySizeAndScale(compressPictureFilePath + pictureName, 200, 200, thumbnailPictureFilePath + pictureName);
             }
             inputStream = new FileInputStream(thumbnailPictureFilePath + pictureName);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return inputStream;
@@ -257,18 +242,19 @@ public class PictureInfoServiceImpl  implements PictureInfoService {
 
     /**
      * 返回查看图片的URL
+     *
      * @param pictureInfo
      * @param needCompress
      * @return
      */
-    public String getPictureInfoURL(PictureInfo pictureInfo, boolean needCompress){
-        if (pictureInfo != null){
-            if (needCompress){
+    public String getPictureInfoURL(PictureInfo pictureInfo, boolean needCompress) {
+        if (pictureInfo != null) {
+            if (needCompress) {
                 return compressPictureFilePath + pictureInfo.getPicName();//返回缩略图
             } else {
                 return pictureFilePath + pictureInfo.getPicName();//返回原图
             }
-        }else {
+        } else {
             return "";
         }
     }

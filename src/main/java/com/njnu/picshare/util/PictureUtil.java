@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * @Authod oruizn
- * @date 2021年11月2021/11/29 0029日下午 22:43
  * 用于图片处理的工具类，如图片压缩、图片复制
  */
 public class PictureUtil {
@@ -18,7 +16,7 @@ public class PictureUtil {
      * @param fileSize
      * @return 图片压缩比例因子
      */
-    public static float calculateCompresScale(float fileSize){
+    public static float calculateCompressScale(float fileSize){
         float fileCompressScale = 1.0f;
         if (fileSize < 1.5f) fileCompressScale = 0.6f;
         else if (fileSize < 2.0f) fileCompressScale = 0.5f;

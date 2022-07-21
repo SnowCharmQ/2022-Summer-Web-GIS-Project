@@ -11,8 +11,7 @@ public class GeoProcessUtil {
      * @param DMS：即Degree, Minute, Second
      * @return
      */
-    public static Double tranformDMSToDegree(String DMS){
-        //-----------编码练习部分·开始---------------
+    public static Double transformDMSToDegree(String DMS){
         try {
             String[] lntArr = DMS.trim()
                     .replace("°", ";")
@@ -20,7 +19,7 @@ public class GeoProcessUtil {
                     .replace("'", ";")
                     .replace("\"", "")
                     .split(";");
-            Double result = 0D;
+            double result = 0D;
             for (int i = lntArr.length; i >0 ; i--) {
                 double v = Double.parseDouble(lntArr[i-1]);
                 if(i==1){
@@ -33,7 +32,6 @@ public class GeoProcessUtil {
         }catch (NullPointerException e){
             return null;
         }
-        //-----------编码练习部分·结束---------------
     }
 
     /**
@@ -43,7 +41,6 @@ public class GeoProcessUtil {
      * @return
      */
     public static String GeometryToString(double longitude, double latitude){
-        String geoStr = "POINT" + "(" + longitude + " " + latitude + ")";
-        return geoStr;
+        return "POINT" + "(" + longitude + " " + latitude + ")";
     }
 }

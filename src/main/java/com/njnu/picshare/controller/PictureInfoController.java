@@ -13,14 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
-/**
- * @Authod oruizn
- * @date 2021年11月2021/11/29 0029日下午 22:18
- */
 @Slf4j
 @RestController
 @CrossOrigin
@@ -29,18 +23,6 @@ public class PictureInfoController extends BaseController {
 
     @Autowired
     private PictureInfoService pictureInfoService;
-
-    /**
-     * 接口测试
-     * @return
-     */
-    @GetMapping("/serviceTest")
-    public JsonResult serviceTest(){
-        json.setData("后台服务已开启！");
-        json.setMsg("这是一个测试接口！");
-        json.setUrl("http://localhost:8888/PictureInfo/serviceTest");
-        return json;
-    }
 
     /**
      * 上传照片
@@ -88,9 +70,8 @@ public class PictureInfoController extends BaseController {
      */
     @GetMapping("/viewPicture")
     public void viewPictureFile(@RequestParam("pictureName") String pictureName, @RequestParam("needCompress") Integer needCompress) throws FileNotFoundException, IOException{
-        //-----------编码练习部分·开始---------------
         //1、根据照片名称找到文件路径；
-        String realPath = "";
+        String realPath;
         if (needCompress == 1){
             realPath = pictureInfoService.selectPictureInfoByName(pictureName, true);//查看缩略图
         }else {
@@ -112,7 +93,6 @@ public class PictureInfoController extends BaseController {
         out.write(buff);
         //关闭响应输出流
         out.close();
-        //-----------编码练习部分·结束---------------
     }
 
     /**
@@ -121,7 +101,6 @@ public class PictureInfoController extends BaseController {
      */
     @GetMapping("/viewThumbnailPicture")
     public void viewThumbnailPicture(@RequestParam("pictureName") String pictureName) throws IOException{
-        //-----------编码练习部分·开始---------------
         String fileType = pictureName.substring(pictureName.lastIndexOf(".") + 1);
         FileInputStream inputStream = pictureInfoService.getThumbnailPicture(pictureName);
         int i = inputStream.available();
@@ -136,7 +115,6 @@ public class PictureInfoController extends BaseController {
         out.write(buff);
         //关闭响应输出流
         out.close();
-        //-----------编码练习部分·结束---------------
     }
     /**
      * 查看照片附言
@@ -144,12 +122,10 @@ public class PictureInfoController extends BaseController {
      */
     @GetMapping("/viewAttachment")
     public JsonResult viewPictureAttachment(@RequestParam("pictureName") String pictureName){
-        //-----------编码练习部分·开始---------------
         String attachment = pictureInfoService.selectPictureAttachmentByName(pictureName);
         if (attachment == null) attachment = "";
         json.setData(attachment);
         return json;
-        //-----------编码练习部分·结束---------------
     }
 
     @PostMapping("/deletePicture")
